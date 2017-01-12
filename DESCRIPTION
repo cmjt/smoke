@@ -1,0 +1,21 @@
+Package: smoke
+Type: Package
+Title: Fitting apatial and apatio-temporal models to smoking logs
+Version: 0.0.1
+Date: 2017-01-11
+Author: Charlotte Jones-Todd <cmjt@st-andrews.ac.uk>
+Maintainer: Charlotte Jones-Todd <cmjt@st-andrews.ac.uk>
+Depends:
+    R (>= 3.3.1),
+    INLA,
+    htmlwidgets,
+    leaflet,
+    Rcpp
+LinkingTo: 
+	Rcpp
+Description: This package provides functions for the simulation and parameter
+    estimation for smokeing logged data.
+License: GPL
+URL: https://github.com/cmjt/smoke
+LazyData: TRUE
+RoxygenNote: 5.0.1
