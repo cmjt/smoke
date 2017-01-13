@@ -1,13 +1,13 @@
-#` Plotting the raw data on Google earth
-#`
-#` @return an explorartory plot of the supplied data. markers will popup with factor values of each location which
+#' Plotting the raw data on Google earth
+#'
+#' @return an explorartory plot of the supplied data. markers will popup with factor values of each location which
 #' can also be subset to plot only a single factor value.
-
-#` @param x  a matrix of three named colums Longitude, Latitude, factor respectively,
-#` 
-#` @id an optional argument specifying a factor of interest supplied to \code{locs} to plot
-#`
-#` @export
+#' 
+#' @param x  a matrix of three named colums Longitude, Latitude, factor respectively,
+#' 
+#' @param id an optional argument specifying a factor of interest supplied to \code{locs} to plot
+#'
+#' @export
 
 plot.smoke <- function(x = NULL, id = NULL){
     if(!is.null(id)){
