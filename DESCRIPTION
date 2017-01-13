@@ -10,6 +10,7 @@ Depends:
     INLA,
     htmlwidgets,
     leaflet,
+    spatstat,	
     Rcpp
 LinkingTo: 
 	Rcpp
