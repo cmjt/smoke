@@ -35,19 +35,18 @@ fit.smoke <- function(mesh = NULL, locs=NULL,  mark = NULL, verbose = FALSE,
     expected.c <- c(diag(spde$param.inla$M0), rep(0,n.c))
                                        
     stk0 <- inla.stack(data=list(y = cbind(y1,NA),expect = expected.s),
-                       A = list(rBind(Diagonal(n = m), Ast.s), 1),tag="smoke",
-                       effects=list(field1 = 1:m,
-                                    list(b0=rep(1,m + n.s))))
+                       A = list(rBind(Diagonal(n = m), Ast.s)),tag="smoke",
+                       effects=list(field1 = 1:m))
 
     stk1 <- inla.stack(data=list(y=cbind(NA,y2), expect=expected.c),
                        A=list(rBind(Diagonal(n = m), Ast.c),
-                              rBind(Diagonal(n = m), Ast.c),1),tag = "crave",
-                       effects=list(b_field1 = 1:m,field2 = 1:m, list(a0 = rep(1, m + n.c))))
+                              rBind(Diagonal(n = m), Ast.c)),tag = "crave",
+                       effects=list(b_field1 = 1:m,field2 = 1:m))
 
     ##cojoin stacks
     stack = inla.stack(stk0,stk1)
 
-    formula = y ~ -1 + b0 +  a0  +
+    formula = y ~ -1 +
         f(field1, model = spde) +
         f(field2, model = spde)+
         f(b_field1, copy = "field1", fixed=FALSE, hyper = hyper ) 
