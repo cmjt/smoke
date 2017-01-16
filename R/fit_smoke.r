@@ -49,7 +49,7 @@ fit.smoke <- function(mesh = NULL, locs=NULL,  mark = NULL, verbose = FALSE,
     formula = y ~ -1 +
         f(field1, model = spde) +
         f(field2, model = spde)+
-        f(b_field1, copy = "field1", fixed=FALSE, hyper = hyper ) 
+        f(b_field1, copy = "field1", fixed = FALSE, hyper = hyper ) 
 
     result = inla(formula, data=inla.stack.data(stack),
                   family=c("poisson","poisson"),only.hyperparam = FALSE,
