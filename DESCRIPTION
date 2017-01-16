@@ -10,8 +10,11 @@ Depends:
     INLA,
     htmlwidgets,
     leaflet,
-    spatstat,	
+    spatstat,
+    maptools,		
     Rcpp
+Imports:
+	Matrix
 LinkingTo: 
 	Rcpp
 Description: This package provides functions for the simulation and parameter
