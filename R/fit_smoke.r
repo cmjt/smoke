@@ -1,0 +1,54 @@
+#' Fitting a marked point process model
+#'
+#' Fits a spatio-temporal marked point process model
+#' using INLA coupled with the SPDE approch 
+#'
+#' @return An inla model fit object, 
+#' @param mesh delauney triangulation of area, an object returned by \link{make.mesh} is suitable.
+#' @param locs a matrix of \code{nrow} locations in \code{ncol} dimesions.
+#' @param mark a vector of length \code{nrow} of marks refering to each point location
+#' @param mark.family assumed likelihood for mark, by defalt "gaussian".
+#' @param verbose Logical, if \code{TRUE}, model fitting is output
+#' the console.
+#'
+#' @importMethodsFrom Matrix diag
+#' 
+#' @export
+fit.smoke <- function(mesh = NULL, locs=NULL,  mark = NULL, mark.family = "gaussian", verbose = FALSE,
+                      hyper = list(theta=list(prior='normal', param=c(0,10)))){
+    spde <-inla.spde2.matern(mesh = mesh, alpha = 2)
+                                        # number of observations
+    n <- nrow(locs)
+                                        # number of mesh nodes
+    nv <- mesh$n
+    y.pp <- rep(0:1, c( nv, n))
+    ## create projection matrix for locations
+    Ast <- inla.spde.make.A(mesh = mesh, loc = locs)
+    ##effect for LGCP used for point pattern
+    st.volume <- diag(spde$param.inla$M0)
+    expected <- c(st.volume, rep(0, n))
+                                        #fields
+    field.pp <- field.mark <-  copy.field <-1:nv
+    
+    stk.pp <- inla.stack(data=list(y=cbind(y.pp,NA), e=expected),
+                         A=list(rBind(Diagonal(n=nv), Ast),rBind(Diagonal(n=nv), Ast),1),
+                         effects=list(field.pp = field.pp,copy.field = copy.field,beta0 = rep(1,(nv+n))))
+    formula <- y ~ 0 + beta0  + f(field.pp, model=spde) +
+        f(field.mark, model=spde) +
+        f(copy.field, copy = "field.mark", fixed=FALSE, hyper = hyper )
+    
+    stk.mark <- inla.stack(data=list(y=cbind(NA,mark)),
+                           A=list(Ast),
+                           effects=list(field.mark = field.mark))
+    ## combine data stacks
+    stack <- inla.stack(stk.pp,stk.mark)
+    
+    ##call to inla
+    result <- inla(formula, family = c("poisson",mark.family),
+                   data=inla.stack.data(stack),
+                   E=inla.stack.data(stack)$e,
+                   control.predictor=list(A=inla.stack.A(stack)),
+                   control.inla=list(strategy='gaussian',int.strategy = 'eb'),
+                   verbose = verbose)
+    result
+}
