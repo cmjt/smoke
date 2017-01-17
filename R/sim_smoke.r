@@ -28,14 +28,16 @@ sim.smoke <- function(x = NULL, sp = NULL, tod.prob = rep(1/23, times = 23), dow
                 A <- inla.mesh.project(mesh = mesh,loc = cbind(x$x,x$y))$A
                 denst <- matrix(drop(denst%*%A),ncol=1)
                 proj <- inla.mesh.projector(mesh = mesh)
-                sample <- denst + geo
-                im <- as.im(exp(matrix(inla.mesh.project(proj,sample),length(proj$x),length(proj$y))),W = w)
-              }
+                sample <- denst + exp(geo)
+                inside <- lgcpSPDE:::inwin(proj,as.owin(sp))
+                im <- matrix(inla.mesh.project(proj,sample),length(proj$x),length(proj$y))
+                im[!inside] <- NA
+                im <- im(t(im),xcol = proj$x ,yrow = proj$y)            
+              }else{im <- density(x,positive = TRUE)}
         }
-        im <- density(x,positive = TRUE)
     }
     set.seed(seed)
-    out <- rpoispp(im)
+    out <- rpoispp(im)[w]
     tod <- sample(1:23, out$n,replace = TRUE, prob = tod.prob)
     dow <- sample(1:7, out$n,replace = TRUE, prob = dow.prob)
     c <- sample(1:20, out$n,replace = TRUE)
