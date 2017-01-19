@@ -1,5 +1,5 @@
 #!/bin/bash
-cd ~/MEGAsync/Gitwork/smoke
+cd ~/Git/smoke
 rm -rfv man
 rm -fv NAMESPACE
 R --slave -e "library(Rcpp); compileAttributes()"
