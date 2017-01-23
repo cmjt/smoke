@@ -122,3 +122,20 @@ hawke.intensity <- function(mu, alpha, beta,times,p = NULL){
     }
     lam.p
 }
+
+## hawke log likelihood
+loglik.hawkes <- function(params, times){ 
+    mu_i <- params[1]
+    alpha_i <- params[2] 
+    beta_i <- params[3]
+    n <- length(times)
+    term_1 <- -mu_i*times[n]
+    term_2 <- sum(alpha_i/beta_i*(exp( -beta_i * (times[n] - times)) - 1))
+    Ai <- c(0, sapply(1:n, function(z) {
+        sum(exp( -beta_i * (times[z]- times[1:(z - 1)])))
+    }))
+    
+    term_3 <- sum(log( mu_i + alpha_i * Ai)) 
+    
+    return(-term_1- term_2 -term_3)
+}
