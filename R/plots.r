@@ -1,4 +1,4 @@
-#' Plotting the raw data on Google earth
+#' Plot point process data on Google earth
 #'
 #' @return an explorartory plot of the supplied data. markers will popup with factor values of each location which
 #' can also be subset to plot only a single factor value.
@@ -34,3 +34,24 @@ plot.smoke <- function(x = NULL, id = NULL){
     map
 }
         
+
+
+#' Plotting simple intensity of a hawkes process
+#' that is where intensity  = mu + sum(alpha * b(t))
+#' where b(t) = beta*exp(-beta*t)
+#' @param times numeric vector of univariate point locations
+#' @param mu numeric immigrant intensity
+#' @param alpha numeric offsping intensity
+#' @param beta numeric normalised offspring intensity
+#'
+#' @export
+#'
+plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL){
+    n <- length(times)
+    max <- max(times)
+    p <- seq(0,max,length.out=500)
+    lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
+    lmax <- max(lam.p)
+    plot(times,rep(1,n),ylim = c(-0.5,lmax),xlab="time",ylab = expression(lambda(t)))
+    lines(p,lam.p,col=2)
+}
