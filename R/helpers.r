@@ -116,7 +116,7 @@ hawke.intensity <- function(mu, alpha, beta,times,p = NULL){
     lam <- function(p){
         mu + alpha*sum(exp(-beta*(p-times))[times<p])
     }
-    lam.p <- rep(0, length(times))
+    lam.p <- rep(0, length(p))
     for(i in 1:length(p)){
         lam.p[i] <- lam(p[i])
     }
