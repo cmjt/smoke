@@ -52,6 +52,7 @@ plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL){
     p <- seq(0,max,length.out=500)
     lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
     lmax <- max(lam.p)
-    plot(times,rep(1,n),ylim = c(-0.5,lmax),xlab="time",ylab = expression(lambda(t)))
+    lmin <- min(lam.p)
+    plot(times,rep(lmin,n),ylim = c(lmin-1.5,lmax),xlab="time",ylab = expression(lambda(t)))
     lines(p,lam.p,col=2)
 }
