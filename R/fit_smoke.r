@@ -1,4 +1,4 @@
-#' Fitting a marked point process model
+#' Fitting a point process model
 #'
 #' Fits a spatio-temporal marked point process model
 #' using INLA coupled with the SPDE approch 
