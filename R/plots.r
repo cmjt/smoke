@@ -43,16 +43,24 @@ plot.smoke <- function(x = NULL, id = NULL){
 #' @param mu numeric immigrant intensity
 #' @param alpha numeric offsping intensity
 #' @param beta numeric normalised offspring intensity
+#' @param n.s optional numeric value giving the extected number of extraneous exents
+#' @param gamma optional numeric value giving the jump in intensity post an extraneous event s. must
+#' be supplied if n.s is
 #'
 #' @export
 #'
-plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL){
+plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s = NULL, gamma = NULL){
     n <- length(times)
     max <- max(times)
     p <- seq(0,max,length.out=500)
-    lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
+    if(!is.null(n.s)){
+        lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times,
+                                 p = p, n.s = n.s, gamma = gamma)
+    }else{
+        lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
+    }
     lmax <- max(lam.p)
     lmin <- min(lam.p)
     plot(times,rep(lmin-0.5,n),ylim = c(lmin-1.5,lmax),xlab="time",ylab = expression(lambda(t)))
-    lines(p,lam.p,col=2)
+    lines(p,lam.p,col="grey")
 }

@@ -110,8 +110,9 @@ fit.smoke.spatial.joint <- function(mesh = NULL, locs=NULL,  mark = NULL, verbos
 ## note for intensity as suggested by http://radhakrishna.typepad.com/simulation-of-univariate-hawkes-via-thinning-1.pdf
 ## times <= p
 
+## included hawkes process with general immigration
 
-hawke.intensity <- function(mu, alpha, beta,times,p = NULL){
+hawke.intensity <- function(mu, alpha, beta,times,p = NULL, n.s = NULL,gamma = NULL){
     if(is.null(p)) p <- times
     lam <- function(p){
         mu + alpha*sum(exp(-beta*(p-times))[times<p])
@@ -120,8 +121,23 @@ hawke.intensity <- function(mu, alpha, beta,times,p = NULL){
     for(i in 1:length(p)){
         lam.p[i] <- lam(p[i])
     }
+    if(!is.null(n.s)){
+        if(is.null(gamma))stop("intensity jump, gamma, due to external event must be supplied for a general immigrant process")
+        if(n.s > length(p))stop("general immigration cannot exceed time span")
+        lam.II <- function(s){
+            gamma*sum(exp(-beta*(s-times))[times<s])
+        }
+        s <- sample(p,n.s)
+        lam.s <- rep(0, length(s))
+        for(i in 1:length(s)){
+            lam.s[i] <- lam.II(s[i])
+        }
+        lam.p[which(p%in%s)]<- lam.p[which(p%in%s)] + lam.s
+    }
     lam.p
 }
+
+
 
 ## hawke log likelihood
 loglik.hawkes <- function(params, times){ 
@@ -136,6 +152,5 @@ loglik.hawkes <- function(params, times){
     }))
     
     term_3 <- sum(log( mu_i + alpha_i * Ai)) 
-    
     return(-term_1- term_2 -term_3)
 }
