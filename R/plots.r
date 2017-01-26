@@ -45,22 +45,37 @@ plot.smoke <- function(x = NULL, id = NULL){
 #' @param beta numeric normalised offspring intensity
 #' @param n.s optional numeric value giving the extected number of extraneous exents
 #' @param gamma optional numeric value giving the jump in intensity post an extraneous event s. must
+#' @param mark a named list to be supplied if the process is marked where rge marks follow an exponential
+#' distribution. list must contain \code{delta} a numeric rate parameter of mark distribution, \code{nu}
+#' the exponential growth of the marks contribution to the self excitement of the process, \code{marks}
+#' a numeric vector of marks at each time in \code{time}. NOTE marks are assumed to follow an exponential distribution.
 #' be supplied if n.s is
 #'
 #' @export
 #'
-plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s = NULL, gamma = NULL){
+plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s = NULL, gamma = NULL, mark = NULL){
     n <- length(times)
     max <- max(times)
     p <- seq(0,max,length.out=500)
     if(!is.null(n.s)){
         lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times,
                                  p = p, n.s = n.s, gamma = gamma)
-    }else{
-        lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
+        ylab <- expression(lambda(t))
+    }
+    if(!is.null(mark)){
+        nu <- mark[["nu"]]
+        delta <- mark[["delta"]]
+        marks <- mark[["marks"]]
+        k <- seq(min(marks),max(marks),length.out=500)
+        lam.p <- hawke.mark.intensity(mu = mu, alpha = alpha, beta = beta, nu = nu,
+                                      delta = delta, times = times, marks = marks, p = p, k = k)
+        ylab <- expression(lambda(t,m))
+        }else{
+            lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
+            ylab <- expression(lambda(t))
     }
     lmax <- max(lam.p)
     lmin <- min(lam.p)
-    plot(times,rep(lmin-0.5,n),ylim = c(lmin-1.5,lmax),xlab="time",ylab = expression(lambda(t)))
+    plot(times,rep(lmin-0.5,n),ylim = c(lmin-1.5,lmax),xlab="time",ylab = ylab)
     lines(p,lam.p,col="grey")
 }

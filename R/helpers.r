@@ -137,6 +137,20 @@ hawke.intensity <- function(mu, alpha, beta,times,p = NULL, n.s = NULL,gamma = N
     lam.p
 }
 
+## hawke intensity for marked process (same as ETAS model i.e., exponential mark)
+hawke.mark.intensity <- function(mu, alpha, beta, nu, delta, times, marks, p = NULL, k = NULL){
+    if(is.null(p)) p <- times
+    if(is.null(k)) k <- marks
+    if(length(p)!=length(k)) stop("k must be the same length as p")
+    lam <- function(p,k){
+        (mu + alpha*sum(exp(nu*marks)[times < p]*exp(-beta*(p-times))[times < p]))*delta*exp(-delta*k)
+    }
+    lam.p <- rep(0, length(p))
+    for(i in 1:length(p)){
+        lam.p[i] <- lam(p[i],k[i])
+    }
+    lam.p
+}
 
 
 ## hawke log likelihood
