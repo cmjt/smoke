@@ -9,12 +9,19 @@
 #' 
 #' @export
 
-fit.hawkes <- function(params, times){
-    fit<- optim(params,loglik.hawkes, times = times)
+fit.hawkes <- function(params, times, marks = NULL){
+    if(!is.null(marks)){
+        fit <- optim(params,loglik.marked.hawkes, times = times, marks = marks)
+        rownames <- c("mu","alpha","beta","nu","delta")
+    }else{
+        fit<- optim(params,loglik.hawkes, times = times)
+        rownames <- c("mu","alpha","beta")
+    }
     pars <- fit$par
-    out <- matrix(NA,ncol = 2, nrow = 3)
+    nrow <- ifelse(!is.null(marks),5,3)
+    out <- matrix(NA,ncol = 2, nrow = nrow)
     out[,1] <- pars
-    rownames(out) <- c("mu","alpha","beta")
+    rownames(out) <- rownames
     colnames(out) <- c("param","se")
     out
 }

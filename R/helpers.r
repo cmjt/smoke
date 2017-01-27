@@ -168,3 +168,22 @@ loglik.hawkes <- function(params, times){
     term_3 <- sum(log( mu_i + alpha_i * Ai)) 
     return(-term_1- term_2 -term_3)
 }
+
+
+## marked hawke log likelihood
+loglik.marked.hawkes <- function(params, times,marks){ 
+    mu_i <- params[1]
+    alpha_i <- params[2] 
+    beta_i <- params[3]
+    nu_i <- params[4]
+    delta_i <- params[5]
+    n <- length(times)
+    term_1 <- -mu_i*times[n]
+    term_2 <- sum(alpha_i/beta_i*(exp(nu_i*marks)*(exp( -beta_i * (times[n] - times)) - 1)))
+    Ai <- c(0, sapply(1:n, function(z) {
+       sum(exp( nu_i* marks[z] -beta_i * (times[z]- times[1:(z - 1)])))
+    }))
+    marks.t <- c(0,marks)
+    term_3 <- sum(log(mu_i + alpha_i*Ai*delta_i*exp(-delta_i*marks.t)))
+    return(-term_1- term_2 -term_3)
+}
