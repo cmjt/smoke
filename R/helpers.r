@@ -117,10 +117,10 @@ hawke.intensity <- function(mu, alpha, beta,times,p = NULL, n.s = NULL,gamma = N
         mu + alpha*sum(exp(-beta*(p-times))[times<p])
     }
     if(!is.null(states)){
+        mu.t <- mu; alpha.t <- alpha; beta.t <- beta ## temp storage
         lam.p <- numeric()
         for(i in 1:length(time)){
             s <- states[i]
-            mu.t <- mu; alpha.t <- alpha; beta.t <- beta ## temp storage
             mu <- mu.t[s]; alpha <- alpha.t[s]; beta <- beta.t[s]; times <- time[states==s]
             lam.p[i] <- lam(p = time[i])
         }
