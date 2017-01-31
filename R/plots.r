@@ -58,16 +58,19 @@ plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s =
     if (is.null(states)&is.null(mark)){
         lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
         ylab <- expression(lambda(t))
+        col <- 1
     }
     if(!is.null(states)){
         lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times,,states = states)
         p <- times
         ylab <- expression(lambda[s](t))
+        col <- states
         }
     if(!is.null(n.s)){
         lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times,
                                  p = p, n.s = n.s, gamma = gamma)
         ylab <- expression(lambda(t))
+        col <- 1
     }
     if(!is.null(mark)){
         nu <- mark[["nu"]]
@@ -77,9 +80,10 @@ plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s =
         lam.p <- hawke.mark.intensity(mu = mu, alpha = alpha, beta = beta, nu = nu,
                                       delta = delta, times = times, marks = marks, p = p, k = k)
         ylab <- expression(lambda(t,m))
+        col <- 1
         }
     lmax <- max(lam.p)
     lmin <- min(lam.p)
-    plot(times,rep(lmin-0.5,n),ylim = c(lmin-1.5,lmax),xlab="time",ylab = ylab)
+    plot(times,rep(lmin-0.5,n),ylim = c(lmin-1.5,lmax),xlab="time",ylab = ylab,col = col)
     lines(p,lam.p,col="grey")
 }
