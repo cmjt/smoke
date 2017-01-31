@@ -55,9 +55,9 @@ plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s =
     n <- length(times)
     max <- max(times)
     p <- seq(0,max,length.out=500)
-    if(is.null(n.s)&is.null(gamma)&is.null(mark)&is.null(states)){
+    if (is.null(states)&is.null(mark)){
         lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
-        ylab <- expression(lambda(t))    
+        ylab <- expression(lambda(t))
     }
     if(!is.null(states)){
         lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times,,states = states)
