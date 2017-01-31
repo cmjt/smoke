@@ -116,13 +116,19 @@ hawke.intensity <- function(mu, alpha, beta,times,p = NULL, n.s = NULL,gamma = N
     lam <- function(p){
         mu + alpha*sum(exp(-beta*(p-times))[times<p])
     }
+    if(is.null(n.s)&is.null(gamma)&is.null(states)){
+        lam.p <- rep(0,length(p))
+        for(i in 1:length(p)){
+            lam.p[i] <- lam(p[i])
+        }
+    }
     if(!is.null(states)){
-        mu.t <- mu; alpha.t <- alpha; beta.t <- beta ## temp storage
-        lam.p <- numeric()
-        for(i in 1:length(time)){
+        mu.t <- mu; alpha.t <- alpha; beta.t <- beta; times.t <- times ## temp storage
+        lam.p <- rep(0,length(times))
+        for(i in 1:length(times.t)){
             s <- states[i]
-            mu <- mu.t[s]; alpha <- alpha.t[s]; beta <- beta.t[s]; times <- time[states==s]
-            lam.p[i] <- lam(p = time[i])
+            mu <- mu.t[s]; alpha <- alpha.t[s]; beta <- beta.t[s]; times <- times.t[states==s]
+            lam.p[i] <- lam(p = times.t[i])
         }
     }
     if(!is.null(n.s)){
@@ -137,11 +143,6 @@ hawke.intensity <- function(mu, alpha, beta,times,p = NULL, n.s = NULL,gamma = N
             lam.s[i] <- lam.II(s[i])
         }
         lam.p[which(p%in%s)]<- lam.p[which(p%in%s)] + lam.s
-    }else{
-        lam.p <- rep(0,length(p))
-        for(i in 1:length(p)){
-            lam.p[i] <- lam(p[i])
-        }
     }
     lam.p
 }

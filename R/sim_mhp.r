@@ -3,7 +3,7 @@
 #'
 #' @export
 sim.mhp <- function(n = NULL,initial.state = NULL, Q = matrix(c(-0.5,0.2,0.5,-0.5),nrow = 2,byrow=TRUE),
-                    mu = c(1,2), alpha = c(1,0.5), beta = c(2,0.8),seed = 1234){
+                    mu = c(1,2), alpha = c(1,0.5), beta = c(2,0.8),seed = 1234,plot.proc = FALSE){
     set.seed(seed)
     n.points <- n
     n.states <- nrow(Q)
@@ -24,5 +24,5 @@ sim.mhp <- function(n = NULL,initial.state = NULL, Q = matrix(c(-0.5,0.2,0.5,-0.
         if(U <= q_j/r_i) { k <- sample(1:n.states,1); y2 <- k ; j <- y2; s <- s+1; times <- times}
         
     }
-    return(cbind(times,states))
+    if(plot.proc){plot.hawkes(times, mu, alpha, beta, states = states)}else{return(cbind(times,states))}
 }

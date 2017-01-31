@@ -36,9 +36,7 @@ plot.smoke <- function(x = NULL, id = NULL){
         
 
 
-#' Plotting simple intensity of a hawkes process
-#' that is where intensity  = mu + sum(alpha * b(t))
-#' where b(t) = beta*exp(-beta*t)
+#' Plotting intensity of a hawkes process
 #' @param times numeric vector of univariate point locations
 #' @param mu numeric immigrant intensity
 #' @param alpha numeric offsping intensity
@@ -53,10 +51,19 @@ plot.smoke <- function(x = NULL, id = NULL){
 #'
 #' @export
 #'
-plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s = NULL, gamma = NULL, mark = NULL){
+plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s = NULL, gamma = NULL, mark = NULL,states = NULL){
     n <- length(times)
     max <- max(times)
     p <- seq(0,max,length.out=500)
+    if(is.null(n.s)&is.null(gamma)&is.null(mark)&is.null(states)){
+        lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
+        ylab <- expression(lambda(t))    
+    }
+    if(!is.null(states)){
+        lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times,,states = states)
+        p <- times
+        ylab <- expression(lambda[s](t))
+        }
     if(!is.null(n.s)){
         lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times,
                                  p = p, n.s = n.s, gamma = gamma)
@@ -70,10 +77,7 @@ plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s =
         lam.p <- hawke.mark.intensity(mu = mu, alpha = alpha, beta = beta, nu = nu,
                                       delta = delta, times = times, marks = marks, p = p, k = k)
         ylab <- expression(lambda(t,m))
-        }else{
-            lam.p <- hawke.intensity(mu = mu, alpha = alpha, beta = beta, times = times, p = p)
-            ylab <- expression(lambda(t))
-    }
+        }
     lmax <- max(lam.p)
     lmin <- min(lam.p)
     plot(times,rep(lmin-0.5,n),ylim = c(lmin-1.5,lmax),xlab="time",ylab = ylab)
