@@ -111,14 +111,19 @@ fit.smoke.spatial.joint <- function(mesh = NULL, locs=NULL,  mark = NULL, verbos
 
 ## included hawkes process with general immigration
 
-hawke.intensity <- function(mu, alpha, beta,times,p = NULL, n.s = NULL,gamma = NULL){
+hawke.intensity <- function(mu, alpha, beta,times,p = NULL, n.s = NULL,gamma = NULL,states = NULL){
     if(is.null(p)) p <- times
     lam <- function(p){
         mu + alpha*sum(exp(-beta*(p-times))[times<p])
     }
-    lam.p <- rep(0, length(p))
-    for(i in 1:length(p)){
-        lam.p[i] <- lam(p[i])
+    if(!is.null(states)){
+        lam.p <- numeric()
+        for(i in 1:length(time)){
+            s <- states[i]
+            mu.t <- mu; alpha.t <- alpha; beta.t <- beta ## temp storage
+            mu <- mu.t[s]; alpha <- alpha.t[s]; beta <- beta.t[s]; times <- time[states==s]
+            lam.p[i] <- lam(p = time[i])
+        }
     }
     if(!is.null(n.s)){
         if(is.null(gamma))stop("intensity jump, gamma, due to external event must be supplied for a general immigrant process")
@@ -132,10 +137,15 @@ hawke.intensity <- function(mu, alpha, beta,times,p = NULL, n.s = NULL,gamma = N
             lam.s[i] <- lam.II(s[i])
         }
         lam.p[which(p%in%s)]<- lam.p[which(p%in%s)] + lam.s
+    }else{
+        lam.p <- rep(0,length(p))
+        for(i in 1:length(p)){
+            lam.p[i] <- lam(p[i])
+        }
     }
     lam.p
 }
-
+    
 ## hawke intensity for marked process (same as ETAS model i.e., exponential mark)
 hawke.mark.intensity <- function(mu, alpha, beta, nu, delta, times, marks, p = NULL, k = NULL){
     if(is.null(p)) p <- times
