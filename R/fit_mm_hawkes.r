@@ -2,6 +2,19 @@
 #'
 #'
 
+FB.mine <- function(times, mu,  alpha, beta, Q, pi){
+    r <- nrow(Q)
+    n <- length(times)
+    Lambda <- diag(mu)
+
+}
+
+LL1 <- function(pi, D, Q, w){
+    sum(log(pi)) - sum(D*q) + sum(w*log(q))
+}
+    
+
+
 FB <- function (tau, Q, delta, lambda) {
     m <- nrow(Q)
     n <- length(tau)
