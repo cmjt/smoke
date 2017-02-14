@@ -84,6 +84,6 @@ plot.hawkes <- function(times = NULL, mu = NULL, alpha = NULL, beta = NULL,n.s =
         }
     lmax <- max(lam.p)
     lmin <- min(lam.p)
-    plot(times,rep(0,n),ylim = c(-0.5,lmax),xlab="time",ylab = ylab,col = col,pch=20)
+    plot(times,rep(lmin-1,n),ylim = c(lmin-2,lmax),xlab="time",ylab = ylab,col = col,pch=20)
     lines(p,lam.p,col="grey")
 }
