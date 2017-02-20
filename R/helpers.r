@@ -212,3 +212,13 @@ hdist <- function (lon1, lat1, lon2, lat2){
     d <- R * c
     return(d)
 }
+
+int.hawkes <- function(mu,alpha,beta, times,t0, T){
+    n <- length(times)
+    result <- sapply(1:n, function(z){
+        mu*times[z] + sum(alpha/beta*(1-exp(-beta*(times[z]-times[1:z]))))
+    })
+    lower <- which(times==t0)
+    upper <- which(times==T)
+    return(result[upper] - result[lower])
+}
