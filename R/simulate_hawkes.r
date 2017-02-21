@@ -33,5 +33,8 @@ simulate.hawkes <- function(mu = NULL,alpha = NULL,beta = NULL,maxT = 10, plot.p
             times <- c(times, t)
         }
     }
-   if(plot.proc){plot.hawkes(times, mu, alpha, beta)}else{return(times)}
+    if(plot.proc){
+        plot.hawkes(times, mu, alpha, beta)
+        return{times}
+    }else{return(times)}
 }
