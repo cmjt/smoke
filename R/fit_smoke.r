@@ -21,11 +21,12 @@
 fit.smoke <- function(mesh = NULL, locs=NULL,  mark = NULL, t = NULL, verbose = FALSE,
                       hyper = list(theta=list(prior='normal', param = c(0,10))),
                       prior.rho = list(theta = list(prior='pccor1', param = c(0, 0.9))),
-                      control.inla=list(strategy='gaussian',int.strategy = 'eb')){
+                      control.inla=list(strategy='gaussian',int.strategy = 'eb'),
+                      ...){
     
    if(!is.null(mark)){
        result <- fit.smoke.spatial.joint(mesh = mesh, locs = locs,  mark = mark, verbose = verbose,
-                                    hyper = hyper, control.inla = control.inla)
+                                    hyper = hyper, control.inla = control.inla, ...)
            }
     if(!is.null(time)){
         result <- lgcpSPDE:::fit.lgcp(mesh = mesh, locs = locs, temp = t, prior.rho = prior.rho,

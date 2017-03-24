@@ -55,7 +55,7 @@ extract <- function(x = NULL, locs = NULL,mesh = NULL, t = NULL, sd = FALSE){
 
 fit.smoke.spatial.joint <- function(mesh = NULL, locs=NULL,  mark = NULL, verbose = FALSE,
                                     hyper = list(theta=list(prior='normal', param = c(0,10))),
-                                    control.inla=list(strategy='gaussian',int.strategy = 'eb')){
+                                    control.inla=list(strategy='gaussian',int.strategy = 'eb'), ...){
     n.marks <- length(table(mark))
     ## Error if there are more than two marks
     if (n.marks != 2){
@@ -101,7 +101,8 @@ fit.smoke.spatial.joint <- function(mesh = NULL, locs=NULL,  mark = NULL, verbos
                   control.predictor=list(A=inla.stack.A(stack),compute=TRUE),
                   control.compute = list(config = TRUE),
                   control.inla = control.inla,
-                  verbose = verbose)
+                  verbose = verbose,
+                  ...)
 }
 
 
