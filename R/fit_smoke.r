@@ -28,7 +28,7 @@ fit.smoke <- function(mesh = NULL, locs=NULL,  mark = NULL, t = NULL, verbose = 
        result <- fit.smoke.spatial.joint(mesh = mesh, locs = locs,  mark = mark, verbose = verbose,
                                     hyper = hyper, control.inla = control.inla, ...)
            }
-    if(!is.null(time)){
+    if(!is.null(t)){
         result <- lgcpSPDE:::fit.lgcp(mesh = mesh, locs = locs, temp = t, prior.rho = prior.rho,
                                       verbose = verbose, control.inla = control.inla)
         }
