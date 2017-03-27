@@ -92,7 +92,7 @@ fit.smoke.spatial.joint <- function(mesh = NULL, locs=NULL,  mark = NULL, verbos
     ##cojoin stacks
     stack = inla.stack(stk0,stk1)
 
-    formula = y ~ -1  + b0 +
+    formula = y ~ -1  + a0 + b0 +
         f(field1, model = spde) +
         f(b_field1, copy = "field1", fixed = FALSE, hyper = hyper) 
 
