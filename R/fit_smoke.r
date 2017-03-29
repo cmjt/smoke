@@ -42,10 +42,8 @@ fit.smoke <- function(mesh = NULL, locs=NULL,  mark = NULL, t = NULL, verbose = 
 #'
 fit.smoke.multi <- function(mesh = NULL, locs = NULL, verbose = FALSE,
                             h.b1 = list(theta=list(prior='normal', param = c(0,10))),
-                            h.b2 = list(theta=list(prior='normal', param = c(0,10))),
                             h.g1 = list(theta=list(prior='normal', param = c(0,10))),
                             h.g2 = list(theta=list(prior='normal', param = c(0,10))),
-                            prior.rho = list(theta = list(prior='pccor1', param = c(0, 0.9))),
                             control.inla=list(strategy='gaussian',int.strategy = 'eb'),
                             ...){
     spde <- inla.spde2.matern(mesh, alpha=2) ## maybe update to include priors on spatial field later on
@@ -56,36 +54,36 @@ fit.smoke.multi <- function(mesh = NULL, locs = NULL, verbose = FALSE,
     n.ns <- nrow(locs.ns)
     locs.t <- locs[["tobacco"]]
     n.t <- nrow(locs.t)
-    locs.nt <- locs[["non.tobacco"]]
-    n.nt <- nrow(locs.nt)
+    locs.as <- locs[["all.shops"]]
+    n.as <- nrow(locs.as)
     A.s <- inla.spde.make.A(mesh = mesh, loc = locs.s)
     A.ns <- inla.spde.make.A(mesh = mesh, loc = locs.ns)
     A.t <- inla.spde.make.A(mesh = mesh, loc = locs.t)
-    A.nt <- inla.spde.make.A(mesh = mesh, loc = locs.nt)
+    A.as <- inla.spde.make.A(mesh = mesh, loc = locs.as)
     y.s <- rep(0:1, c( m, n.s))
     expected.s <-c(diag(spde$param.inla$M0), rep(0,n.s))
     y.ns <- rep(0:1, c( m, n.ns))
     expected.ns <- c(diag(spde$param.inla$M0), rep(0,n.ns))
     y.t <- rep(0:1, c( m, n.t))
     expected.t <-c(diag(spde$param.inla$M0), rep(0,n.t))
-    y.nt <- rep(0:1, c( m, n.nt))
-    expected.nt <-c(diag(spde$param.inla$M0), rep(0,n.nt))
+    y.as <- rep(0:1, c( m, n.as))
+    expected.as <-c(diag(spde$param.inla$M0), rep(0,n.as))
     stk.s <- inla.stack(data=list(y = cbind(y.s,NA,NA,NA),expect = expected.s),
-                       A = list(rBind(Diagonal(n = m), A.s),rBind(Diagonal(n = m), A.s)),tag="smoke",
-                       effects=list(field1 = 1:m,s.copy.field2 = 1:m))
+                       A = list(rBind(Diagonal(n = m), A.s),1),tag="smoke",
+                       effects=list(s.copy.field2 = 1:m,alpha0 = rep(1,n.s+mesh$n)))
     stk.ns <- inla.stack(data=list(y = cbind(NA,y.ns,NA,NA),expect = expected.ns),
-                       A = list(rBind(Diagonal(n = m), A.ns),rBind(Diagonal(n = m), A.ns)),tag="non-smoke",
-                       effects=list(copy.field1 = 1:m,ns.copy.field2 = 1:m))
+                       A = list(rBind(Diagonal(n = m), A.ns),1),tag="non-smoke",
+                       effects=list(ns.copy.field2 = 1:m,beta0 = rep(1,n.ns+mesh$n)))
     stk.t <- inla.stack(data=list(y = cbind(NA,NA,y.t,NA),expect = expected.t),
-                       A = list(rBind(Diagonal(n = m), A.t)),tag="tobacco",
-                       effects=list(field2 = 1:m))
-    stk.nt <- inla.stack(data=list(y = cbind(NA,NA,NA,y.nt),expect = expected.nt),
-                       A = list(rBind(Diagonal(n = m), A.nt)),tag="non-tobacco",
-                       effects=list(copy.field2 = 1:m))
-    stack <- inla.stack(stk.s, stk.ns, stk.t, stk.nt)
-    formula <- y ~ 0 + f(field1, model = spde) +
-        f(copy.field1,copy = "field1",fixed = FALSE,hyper = h.b1) + 
-        f(field2, model = spde) + f(copy.field2, copy = "field2",fixed = FALSE, hyper = h.b2) +
+                       A = list(rBind(Diagonal(n = m), A.t),rBind(Diagonal(n = m), A.t)),tag="tobacco",
+                       effects=list(copy.field1 = 1:m, field2 = 1:m))
+    stk.as <- inla.stack(data=list(y = cbind(NA,NA,NA,y.as),expect = expected.as),
+                       A = list(rBind(Diagonal(n = m), A.as)),tag="non-tobacco",
+                       effects=list(field1 = 1:m))
+    stack <- inla.stack(stk.s, stk.ns, stk.t, stk.as)
+    formula <- y ~ 0  + alpha0 + beta0 + f(field1, model = spde) +
+        f(field2, model = spde) + 
+        f(copy.field1, copy = "field1",fixed = FALSE, hyper = h.b1) +
         f(s.copy.field2, copy = "field2",fixed = FALSE, hyper = h.g1) +
         f(ns.copy.field2, copy = "field2",fixed = FALSE, hyper = h.g2)
     result = inla(formula, data=inla.stack.data(stack),
