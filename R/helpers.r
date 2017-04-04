@@ -18,17 +18,15 @@ extract <- function(x = NULL, locs = NULL,mesh = NULL, t = NULL, sd = FALSE){
         means <- list()
         for (i in idx[1]:idx[n]) {
             means[[i - idx[1] + 1]] <- lapply(1:t, function(j) {
-                meshNodes <- x$summary.random$field.pp$mean[1:mesh$n + (i-1)*mesh$n]
+                meshNodes <- x$summary.random[[i]]$mean[1:mesh$n + (i-1)*mesh$n]
                 means[[i]] <- drop(A%*%meshNodes)
-                return(r)
             })
         }
         sds <- list()
         for (i in idx[1]:idx[n]) {
             sds[[i - idx[1] + 1]] <- lapply(1:t, function(j) {
-                meshNodes <- x$summary.random$field.pp$mean[1:mesh$n + (i-1)*mesh$n]
+                meshNodes <- x$summary.random[[i]]$mean[1:mesh$n + (i-1)*mesh$n]
                 sds[[i]] <- drop(A%*%meshNodes)
-                return(r)
             })
         }
     } else {
@@ -48,8 +46,7 @@ extract <- function(x = NULL, locs = NULL,mesh = NULL, t = NULL, sd = FALSE){
     names(sds) <- names(means) <- fields
     ifelse(sd, return(sds), return(means))
 }
-        
-    
+
    
 ## fit spatial only  marked model
 
