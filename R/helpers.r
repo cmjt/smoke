@@ -160,6 +160,21 @@ hawke.mark.intensity <- function(mu, alpha, beta, nu, delta, times, marks, p = N
     lam.p
 }
 
+## hawke intensity for marked process (same as ETAS model i.e., exponential mark)
+hawke.population.intensity <- function(mu, alpha, beta, times, population, p = NULL, k = NULL){
+    if(is.null(p)) p <- times
+    if(is.null(k)) k <- population
+    if(length(p)!=length(k)) stop("k must be the same length as p")
+    lam <- function(p,k){
+        (mu + alpha*sum(exp(-beta*(p-times))[times<p]))/k
+    }
+    lam.p <- rep(0, length(p))
+    for(i in 1:length(p)){
+        lam.p[i] <- lam(p[i],k[i])
+    }
+    lam.p
+}
+
 
 ## hawke log likelihood
 loglik.hawkes <- function(params, times){ 
@@ -176,6 +191,21 @@ loglik.hawkes <- function(params, times){
     return(-term_1- term_2 -term_3)
 }
 
+## hawke log likelihood multiplied by population
+loglik.hawkes.population <- function(params, times, population){ 
+    mu_i <- params[1]
+    alpha_i <- params[2] 
+    beta_i <- params[3]
+    n <- length(times)
+    term_1 <- -mu_i*times[n]
+    term_2 <- sum(alpha_i/beta_i*(exp( -beta_i * (times[n] - times)) - 1))
+    Ai <- c(0, sapply(2:n, function(z) {
+        sum(exp( -beta_i * (times[z]- times[1:(z - 1)])))
+    }))
+    term_3 <- sum(log((mu_i + alpha_i * Ai)/population)) 
+    return(-term_1- term_2 -term_3)
+}
+
 
 ## marked hawke log likelihood
 loglik.marked.hawkes <- function(params, times,marks){ 
@@ -187,7 +217,7 @@ loglik.marked.hawkes <- function(params, times,marks){
     n <- length(times)
     term_1 <- -mu_i*times[n]
     term_2 <- sum(alpha_i/beta_i*(exp(nu_i*marks)*(exp( -beta_i * (times[n] - times)) - 1)))
-    Ai <- c(0, sapply(1:n, function(z) {
+    Ai <- c(0, sapply(2:n, function(z) {
        sum(exp( nu_i* marks[z] -beta_i * (times[z]- times[1:(z - 1)])))
     }))
     marks.t <- c(0,marks)

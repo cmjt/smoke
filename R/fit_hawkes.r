@@ -10,13 +10,18 @@
 #' 
 #' @export
 
-fit.hawkes <- function(params, times, marks = NULL, method = "L-BFGS-B"){
+fit.hawkes <- function(params, times,population = NULL, marks = NULL, method = "L-BFGS-B"){
     if(!is.null(marks)){
         fit <- optim(params,loglik.marked.hawkes, times = times, marks = marks,method = method)
         rownames <- c("mu","alpha","beta","nu","delta")
     }else{
-        fit<- optim(params,loglik.hawkes, times = times,method = method)
-        rownames <- c("mu","alpha","beta")
+        if(!is.null(population)){
+            fit<- optim(params,loglik.hawkes.population, times = times, population = population,method = method)
+            rownames <- c("mu","alpha","beta")
+        }else{
+            fit<- optim(params,loglik.hawkes, times = times,method = method)
+            rownames <- c("mu","alpha","beta")
+        }
     }
     pars <- fit$par
     nrow <- ifelse(!is.null(marks),5,3)
